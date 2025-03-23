@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 import {Script} from "forge-std/Script.sol";
@@ -18,19 +18,23 @@ contract HelperConfig is Script {
         if (block.chainid == 11155111) {
             activeNetworkConfig = getSepoliaEthConfig();
         } else if (block.chainid == 1) {
-            activeNetworkConfig = getMainnetethConfig();
+            activeNetworkConfig = getMainnetEthConfig();
         } else {
             activeNetworkConfig = getOrCreateAnvilEthConfig();
         }
     }
 
     function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
-        NetworkConfig memory sepoliaConfig = NetworkConfig({priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306});
+        NetworkConfig memory sepoliaConfig = NetworkConfig({
+            priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306
+        });
         return sepoliaConfig;
     }
 
-    function getMainnetethConfig() public pure returns (NetworkConfig memory) {
-        NetworkConfig memory ethConfig = NetworkConfig({priceFeed: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419});
+    function getMainnetEthConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory ethConfig = NetworkConfig({
+            priceFeed: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
+        });
         return ethConfig;
     }
 
@@ -40,19 +44,21 @@ contract HelperConfig is Script {
         }
         vm.startBroadcast();
         MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
-
         vm.stopBroadcast();
-        NetworkConfig memory anvilConfig = NetworkConfig({priceFeed: address(mockPriceFeed)});
+
+        NetworkConfig memory anvilConfig = NetworkConfig({
+            priceFeed: address(mockPriceFeed)
+        });
         return anvilConfig;
     }
 
-    function getConfigByChainId(uint256 chainId) public pure returns (NetworkConfig memory) {
+    function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
         if (chainId == 11155111) {
             return getSepoliaEthConfig();
         } else if (chainId == 1) {
-            return getMainnetethConfig();
+            return getMainnetEthConfig();
         } else {
-            revert("Unsupported chainId");
+            return getOrCreateAnvilEthConfig(); // fallback for local or CI
         }
     }
 }
